@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=AW-993352616"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'AW-993352616');
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lemes & Associados | Advocacia de Elite & IA</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap');
+        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; overflow-x: hidden; background-color: #fff; color: #0f172a; }
+        h1, h2, h3, h4, .font-serif { font-family: 'Playfair Display', serif; }
+        #root { min-height: 100vh; }
+        html { scroll-behavior: smooth; }
+
+        .service-card { transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid #f1f5f9; background: #fff; }
+        .service-card:hover { border-color: #b45309; transform: translateY(-4px); box-shadow: 0 15px 30px -10px rgba(0,0,0,0.05); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
+
+        @media (max-width: 640px) {
+            .mobile-compact-padding { padding-top: 5rem !important; padding-bottom: 2rem !important; }
+            .mobile-title { font-size: 2rem !important; line-height: 2.3rem !important; }
+            .mobile-text-sm { font-size: 0.875rem !important; }
+            .section-spacing { padding-top: 2rem !important; padding-bottom: 2rem !important; }
+        }
+
+        /* ===== CHAT WIDGET ===== */
+        #chat-widget { position: fixed; bottom: 24px; right: 24px; z-index: 9999; font-family: 'Inter', sans-serif; }
+
+        #chat-toggle-btn {
+            width: 62px; height: 62px; border-radius: 50%;
+            background: linear-gradient(135deg, #1e1b4b, #4338ca);
+            border: none; cursor: pointer;
+            box-shadow: 0 8px 32px rgba(30,27,75,0.4);
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+        #chat-toggle-btn:hover { transform: scale(1.08); box-shadow: 0 12px 40px rgba(30,27,75,0.5); }
+
+        .chat-online-dot {
+            position: absolute; top: 2px; right: 2px;
+            width: 14px; height: 14px; border-radius: 50%;
+            background: #10b981; border: 2px solid white;
+            animation: pulseDot 2s infinite;
+        }
+        @keyframes pulseDot { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+        #chat-box {
+            position: absolute; bottom: 74px; right: 0;
+            width: 350px; max-height: 500px;
+            background: #fff; border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+            display: flex; flex-direction: column; overflow: hidden;
+            transform-origin: bottom right;
+            transition: opacity 0.25s, transform 0.25s cubic-bezier(0.16,1,0.3,1);
+        }
+        #chat-box.hidden { opacity: 0; transform: scale(0.88); pointer-events: none; }
+
+        #chat-header {
+            background: linear-gradient(135deg, #1e1b4b, #4338ca);
+            color: white; padding: 13px 16px;
+            display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+        }
+        .chat-avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+        .chat-header-info { flex: 1; }
+        .chat-header-name { font-weight: 700; font-size: 13px; }
+        .chat-header-status { font-size: 10px; opacity: 0.75; display: flex; align-items: center; gap: 4px; margin-top: 1px; }
+        .chat-header-status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; }
+        #chat-close-btn { background: none; border: none; color: white; cursor: pointer; opacity: 0.7; font-size: 18px; line-height: 1; padding: 2px; }
+        #chat-close-btn:hover { opacity: 1; }
+
+        #chat-messages { flex: 1; overflow-y: auto; padding: 14px 12px; display: flex; flex-direction: column; gap: 10px; }
+        #chat-messages::-webkit-scrollbar { width: 3px; }
+        #chat-messages::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
+        .chat-msg { display: flex; gap: 7px; align-items: flex-end; }
+        .chat-msg.user { flex-direction: row-reverse; }
+        .chat-msg-avatar { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+        .chat-msg.bot .chat-msg-avatar { background: #f1f5f9; border: 1px solid #e2e8f0; }
+        .chat-msg.user .chat-msg-avatar { background: #4338ca; }
+        .chat-bubble { max-width: 78%; padding: 9px 13px; border-radius: 16px; font-size: 13px; line-height: 1.5; word-break: break-word; }
+        .chat-msg.bot .chat-bubble { background: #f1f5f9; color: #1e293b; border-bottom-left-radius: 4px; }
+        .chat-msg.user .chat-bubble { background: #4338ca; color: white; border-bottom-right-radius: 4px; }
+
+        .chat-typing { display: flex; gap: 4px; padding: 10px 14px; background: #f1f5f9; border-radius: 16px; border-bottom-left-radius: 4px; width: fit-content; }
+        .chat-typing span { width: 7px; height: 7px; border-radius: 50%; background: #94a3b8; animation: typingBounce 1.2s infinite; }
+        .chat-typing span:nth-child(2) { animation-delay: 0.2s; }
+        .chat-typing span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+        #chat-input-area { padding: 10px 12px; border-top: 1px solid #f1f5f9; display: flex; gap: 8px; align-items: flex-end; flex-shrink: 0; }
+        #chat-input { flex: 1; border: 1.5px solid #e2e8f0; border-radius: 10px; padding: 8px 12px; font-family: inherit; font-size: 13px; resize: none; max-height: 80px; outline: none; transition: border-color 0.2s; color: #1e293b; background: #fafafa; }
+        #chat-input:focus { border-color: #4338ca; }
+        #chat-send-btn { width: 36px; height: 36px; border-radius: 10px; border: none; background: #4338ca; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 15px; transition: background 0.2s; flex-shrink: 0; }
+        #chat-send-btn:hover { background: #3730a3; }
+        #chat-send-btn:disabled { background: #e2e8f0; cursor: not-allowed; }
+        #chat-footer-label { text-align: center; font-size: 10px; color: #cbd5e1; padding: 4px 0 8px; flex-shrink: 0; }
+    </style>
+</head>
+<body class="antialiased text-left">
+    <div id="root"></div>
+
+    <!-- CHAT WIDGET -->
+    <div id="chat-widget">
+        <div id="chat-box" class="hidden">
+            <div id="chat-header">
+                <div class="chat-avatar">⚖️</div>
+                <div class="chat-header-info">
+                    <div class="chat-header-name">Assistente Jurídico</div>
+                    <div class="chat-header-status">
+                        <div class="chat-header-status-dot"></div>
+                        Lemes & Associados · Online
+                    </div>
+                </div>
+                <button id="chat-close-btn">✕</button>
+            </div>
+            <div id="chat-messages"></div>
+            <div id="chat-input-area">
+                <textarea id="chat-input" rows="1" placeholder="Digite sua mensagem..."></textarea>
+                <button id="chat-send-btn">&#10148;</button>
+            </div>
+            <div id="chat-footer-label">Powered by Gemini Pro · Lemes & Associados</div>
+        </div>
+        <button id="chat-toggle-btn">
+            <div class="chat-online-dot"></div>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+        </button>
+    </div>
+
+    <script>
+        const API_URL = "https://lemes-chat-api.onrender.com/chat";
+        const chatBox = document.getElementById("chat-box");
+        const chatMessages = document.getElementById("chat-messages");
+        const chatInput = document.getElementById("chat-input");
+        const chatSendBtn = document.getElementById("chat-send-btn");
+        const chatToggleBtn = document.getElementById("chat-toggle-btn");
+        const chatCloseBtn = document.getElementById("chat-close-btn");
+
+        let messages = [];
+        let isOpen = false;
+        let isLoading = false;
+
+        function toggleChat() {
+            isOpen = !isOpen;
+            chatBox.classList.toggle("hidden", !isOpen);
+            if (isOpen && messages.length === 0) {
+                addBotMessage("Olá! 👋 Seja bem-vindo à **Lemes & Associados**.\n\nSou o assistente jurídico virtual do escritório. Posso orientá-lo sobre nossas áreas de atuação e agendar uma consulta com o Dr. Diego Lemes.\n\nComo posso ajudá-lo hoje?");
+            }
+        }
+
+        chatToggleBtn.addEventListener("click", toggleChat);
+        chatCloseBtn.addEventListener("click", toggleChat);
+
+        function addBotMessage(text) {
+            messages.push({ role: "assistant", content: text });
+            renderMessages();
+        }
+
+        function renderMessages() {
+            chatMessages.innerHTML = "";
+            messages.forEach(m => {
+                const isUser = m.role === "user";
+                const div = document.createElement("div");
+                div.className = "chat-msg " + (isUser ? "user" : "bot");
+                const formatted = m.content
+                    .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                    .replace(/\n/g, "<br>");
+                div.innerHTML = '<div class="chat-msg-avatar">' + (isUser ? "👤" : "⚖️") + '</div><div class="chat-bubble">' + formatted + '</div>';
+                chatMessages.appendChild(div);
+            });
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function showTyping() {
+            const div = document.createElement("div");
+            div.className = "chat-msg bot";
+            div.id = "typing-indicator";
+            div.innerHTML = '<div class="chat-msg-avatar">⚖️</div><div class="chat-typing"><span></span><span></span><span></span></div>';
+            chatMessages.appendChild(div);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function hideTyping() {
+            const t = document.getElementById("typing-indicator");
+            if (t) t.remove();
+        }
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text || isLoading) return;
+            messages.push({ role: "user", content: text });
+            chatInput.value = "";
+            chatInput.style.height = "auto";
+            renderMessages();
+            isLoading = true;
+            chatSendBtn.disabled = true;
+            showTyping();
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ messages })
+                });
+                const data = await res.json();
+                hideTyping();
+                if (data.reply) {
+                    messages.push({ role: "assistant", content: data.reply });
+                    renderMessages();
+                }
+            } catch (e) {
+                hideTyping();
+                messages.push({ role: "assistant", content: "Desculpe, ocorreu um erro. Entre em contato pelo WhatsApp: (11) 99515-5021" });
+                renderMessages();
+            } finally {
+                isLoading = false;
+                chatSendBtn.disabled = false;
+            }
+        }
+
+        chatSendBtn.addEventListener("click", sendMessage);
+        chatInput.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+        });
+        chatInput.addEventListener("input", function() {
+            this.style.height = "auto";
+            this.style.height = Math.min(this.scrollHeight, 80) + "px";
+        });
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const Icon = ({ name, size = 20, className = "" }) => {
+            useEffect(() => { if (window.lucide) { window.lucide.createIcons(); } }, [name]);
+            const iconMap = {
+                'scale': 'scale', 'briefcase': 'briefcase', 'building': 'building-2',
+                'cpu': 'cpu', 'shield': 'shield-check', 'award': 'award',
+                'whatsapp': 'message-circle', 'arrow-right': 'arrow-right', 'user': 'user-check',
+                'landmark': 'landmark', 'banknote': 'banknote', 'sparkles': 'sparkles',
+                'x': 'x', 'loader': 'loader-2', 'book-open': 'book-open', 'users': 'users',
+                'chevron-right': 'chevron-right', 'bell': 'bell', 'clock': 'clock'
+            };
+            return <i data-lucide={iconMap[name] || 'circle'} className={className} style={{ width: size, height: size, display: 'inline-block' }}></i>;
+        };
+
+        const GeminiLogo = ({ size = "w-10 h-10" }) => (
+            <svg viewBox="0 0 100 100" className={size}>
+                <defs>
+                    <linearGradient id="gemini-grad-main" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style={{stopColor:'#4285F4', stopOpacity:1}} />
+                        <stop offset="50%" style={{stopColor:'#9b72cb', stopOpacity:1}} />
+                        <stop offset="100%" style={{stopColor:'#d96570', stopOpacity:1}} />
+                    </linearGradient>
+                </defs>
+                <path d="M50 5L58 42L95 50L58 58L50 95L42 58L5 50L42 42L5 50" fill="url(#gemini-grad-main)">
+                    <animate attributeName="opacity" values="0.8;1;0.8" dur="3s" repeatCount="indefinite" />
+                </path>
+                <circle cx="50" cy="50" r="12" fill="white" opacity="0.3" />
+            </svg>
+        );
+
+        const App = () => {
+            const [scrolled, setScrolled] = useState(false);
+            useEffect(() => {
+                const handleScroll = () => setScrolled(window.scrollY > 20);
+                window.addEventListener('scroll', handleScroll);
+                return () => window.removeEventListener('scroll', handleScroll);
+            }, []);
+
+            const CONFIG = {
+                links: {
+                    diagnostico: "https://www.lemesadvogados.com/diagin%C3%B3stico",
+                    whatsapp: "https://wa.me/5511995155021?text=Olá,%20preciso%20de%20ajuda.",
+                    blog: "https://www.lemesadvogados.com/blog",
+                    linkedin: "https://www.linkedin.com/in/diego-henrique-lemes-8882b0/",
+                    home: "https://www.lemesadvogados.com/"
+                },
+                servicos: [
+                    { title: "Direito Civil", icon: "scale", url: "https://www.lemesadvogados.com/civel", desc: "Contratos e Imobiliário." },
+                    { title: "Trabalhista", icon: "briefcase", url: "https://www.lemesadvogados.com/trabalhista", desc: "Defesa estratégica do trabalhador." },
+                    { title: "Previdenciário", icon: "landmark", url: "https://www.lemesadvogados.com/inss", desc: "Especialistas em BPC/LOAS." },
+                    { title: "Família & Sucessões", icon: "users", url: "https://www.lemesadvogados.com/familia", desc: "Inventários e Divórcios." },
+                    { title: "Empresarial", icon: "building", url: "https://www.lemesadvogados.com/empresarial", desc: "Blindagem patrimonial." },
+                    { title: "Tributário", icon: "banknote", url: "https://www.lemesadvogados.com/en/tributario", desc: "Defesa fiscal estratégica." },
+                    { title: "Insights", icon: "book-open", url: "https://www.lemesadvogados.com/blog", desc: "Artigos e notícias." }
+                ]
+            };
+
+            return (
+                <div className="flex flex-col min-h-screen bg-white text-left">
+                    <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-white/95 backdrop-blur-md py-2 shadow-sm border-b border-slate-100' : 'bg-transparent py-4'}`}>
+                        <div className="max-w-7xl mx-auto px-4 md:px-6 flex justify-between items-center text-left">
+                            <div className="flex flex-col text-left leading-tight">
+                                <h1 className="text-lg md:text-xl font-bold tracking-tighter uppercase text-indigo-950">Lemes <span className="font-light text-slate-400">&</span> Associados</h1>
+                                <p className="text-[5px] md:text-[6px] uppercase tracking-[0.4em] mt-0.5 font-bold text-slate-500">Sociedade de Advogados</p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <a href={CONFIG.links.diagnostico} target="_blank" className="bg-indigo-950 text-white px-3 md:px-4 py-1.5 md:py-2 text-[8px] md:text-[9px] font-black uppercase tracking-widest rounded-sm shadow-md no-underline">Diagnóstico Digital</a>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <section className="mobile-compact-padding pt-32 pb-12 md:pb-16 border-b border-slate-100 px-4 md:px-6 text-left">
+                        <div className="max-w-7xl mx-auto text-left">
+                            <div className="max-w-3xl space-y-4 md:space-y-6 animate-fade-in">
+                                <span className="text-amber-700 text-[8px] md:text-[9px] font-black uppercase tracking-[0.5em] text-left">São Paulo | Elite Jurídica</span>
+                                <h2 className="mobile-title text-4xl md:text-7xl font-serif text-indigo-950 leading-tight tracking-tight text-left">
+                                    Recupere seus direitos. <br/>
+                                    <span className="italic font-normal text-slate-400 text-left">Nós resolvemos o problema.</span>
+                                </h2>
+                                <p className="mobile-text-sm text-slate-500 text-base md:text-lg font-light max-w-xl text-left">
+                                    Experiência boutique aliada à precisão tecnológica para resultados ágeis em causas complexas.
+                                </p>
+                                <div className="flex flex-col sm:flex-row gap-3 pt-2 text-left">
+                                    <a href={CONFIG.links.diagnostico} target="_blank" className="bg-indigo-950 text-white px-8 md:px-10 py-4 md:py-5 rounded-sm font-black uppercase text-[9px] md:text-[10px] tracking-widest text-center shadow-xl hover:bg-indigo-700 no-underline">Diagnóstico Digital</a>
+                                    <a href={CONFIG.links.whatsapp} target="_blank" className="bg-white border border-emerald-500 flex items-center justify-center gap-3 text-emerald-700 px-8 md:px-10 py-4 md:py-5 rounded-sm font-black uppercase text-[9px] md:text-[10px] no-underline">
+                                        <Icon name="whatsapp" size={16} className="text-emerald-500" /> WhatsApp Direto
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="section-spacing py-12 md:py-16 bg-white px-4 md:px-6 text-left">
+                        <div className="max-w-7xl mx-auto text-left">
+                            <div className="mb-6 md:mb-10 space-y-4">
+                                <div className="space-y-1">
+                                    <h2 className="text-amber-700 font-bold text-[8px] md:text-[9px] uppercase tracking-[0.5em] mb-1">Expertise</h2>
+                                    <h3 className="text-2xl md:text-3xl font-serif text-indigo-950">Soluções Estratégicas.</h3>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="flex items-start gap-3 p-3 bg-emerald-50/50 border border-emerald-100 rounded-sm">
+                                        <Icon name="bell" size={14} className="text-emerald-600 mt-0.5" />
+                                        <div className="space-y-1">
+                                            <p className="text-[9px] font-bold uppercase tracking-wider text-emerald-700">Transparência em Tempo Real</p>
+                                            <p className="text-slate-500 text-[11px] font-medium leading-relaxed">Receba notificações instantâneas no telemóvel e acompanhe a evolução sempre que desejar.</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-start gap-3 p-3 bg-amber-50/50 border border-amber-100 rounded-sm">
+                                        <Icon name="clock" size={14} className="text-amber-600 mt-0.5" />
+                                        <div className="space-y-1">
+                                            <p className="text-[9px] font-bold uppercase tracking-wider text-amber-700">Disponibilidade 24h</p>
+                                            <p className="text-slate-500 text-[11px] font-medium leading-relaxed">Estamos à disposição para esclarecimentos de dúvidas 24 horas por dia via canais digitais.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
+                                {CONFIG.servicos.map((s, i) => (
+                                    <div key={i} className="service-card p-5 md:p-8 flex flex-col group text-left">
+                                        <Icon name={s.icon} size={24} className="text-indigo-950 mb-4 group-hover:text-amber-700 transition-colors" />
+                                        <h4 className="text-lg font-serif font-bold text-indigo-950 mb-2">{s.title}</h4>
+                                        <p className="text-slate-500 text-[10px] md:text-xs leading-relaxed mb-4 flex-1">{s.desc}</p>
+                                        <a href={s.url} target="_blank" className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-amber-700 border-b border-amber-100 pb-0.5 group-hover:border-amber-700 w-fit no-underline">Acessar Página</a>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="section-spacing py-8 md:py-16 bg-slate-50 border-y border-slate-100 px-4 md:px-6">
+                        <div className="max-w-7xl mx-auto">
+                            <div className="bg-indigo-950 rounded-sm p-6 md:p-14 relative overflow-hidden flex flex-col md:flex-row items-center gap-6 md:gap-10 shadow-2xl text-white text-left">
+                                <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 -skew-x-12 translate-x-1/2"></div>
+                                <div className="relative z-10 flex-shrink-0 flex flex-col items-center">
+                                    <GeminiLogo size="w-12 h-12 md:w-20 md:h-20" />
+                                    <div className="mt-2 text-center">
+                                        <p className="text-[6px] font-black uppercase tracking-[0.3em] text-indigo-300/60">Powered by</p>
+                                        <p className="text-xs font-bold text-white tracking-tighter uppercase">Gemini Pro</p>
+                                    </div>
+                                </div>
+                                <div className="relative z-10 space-y-2 flex-1 text-center md:text-left">
+                                    <h3 className="text-xl md:text-4xl font-serif text-white">Advocacia na Era da Inteligência.</h3>
+                                    <p className="text-indigo-200/80 text-xs md:text-lg font-light leading-relaxed max-w-2xl">
+                                        Integramos o motor Gemini Pro da Google para processar jurisprudência e prever cenários jurídicos com precisão.
+                                    </p>
+                                    <div className="flex justify-center md:justify-start gap-4 pt-2">
+                                        <div className="flex items-center gap-1.5">
+                                            <Icon name="shield" size={12} className="text-amber-500" />
+                                            <span className="text-[8px] font-black uppercase text-white tracking-[0.2em]">Seguro</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <Icon name="sparkles" size={12} className="text-amber-500" />
+                                            <span className="text-[8px] font-black uppercase text-white tracking-[0.2em]">Preditivo</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section className="section-spacing py-12 md:py-16 bg-white px-4 md:px-6">
+                        <div className="max-w-7xl mx-auto grid md:grid-cols-12 gap-8 md:gap-12 items-center">
+                            <div className="md:col-span-7 space-y-4 md:space-y-6 text-left">
+                                <h2 className="text-amber-700 font-bold text-[8px] md:text-[9px] uppercase tracking-[0.5em]">Fundação & Qualificação</h2>
+                                <h3 className="text-2xl md:text-4xl font-serif text-indigo-950 leading-tight">Estratégia Jurídica de Alto Impacto.</h3>
+                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+                                    <strong>Diego Henrique Lemes</strong> lidera a banca unindo o rigor tradicional ao motor Gemini Pro IA para anular riscos corporativos de forma estratégica.
+                                </p>
+                                <a href={CONFIG.links.linkedin} target="_blank" className="inline-flex items-center gap-2 text-[9px] font-black uppercase tracking-widest border-b-2 border-amber-600 pb-1 no-underline">
+                                    Perfil Profissional <Icon name="chevron-right" size={12} />
+                                </a>
+                            </div>
+                            <div className="md:col-span-5">
+                                <div className="bg-indigo-950 p-6 md:p-8 text-white rounded-sm shadow-xl text-left">
+                                    <Icon name="user" size={24} className="text-amber-500 mb-4" />
+                                    <h4 className="text-lg md:text-xl font-serif font-bold mb-1">Diego H. Lemes</h4>
+                                    <p className="text-[8px] uppercase tracking-[0.2em] text-amber-500 font-black mb-4">Sócio Fundador • OAB/SP 255.888</p>
+                                    <p className="text-indigo-100/90 italic text-xs md:text-sm mb-6 leading-relaxed">
+                                        "Nossa missão é anular a burocracia e erros processuais através da tecnologia."
+                                    </p>
+                                    <div className="flex justify-between items-center border-t border-white/10 pt-4">
+                                        <a href={CONFIG.links.whatsapp} target="_blank" className="text-[9px] font-black uppercase tracking-widest text-amber-400 hover:text-white transition-all no-underline">Consulta VIP</a>
+                                        <a href={CONFIG.links.linkedin} target="_blank" className="text-white/40 hover:text-white transition-all">
+                                            <Icon name="users" size={20} />
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer className="bg-slate-950 text-slate-600 py-10 md:py-12 px-4 md:px-6">
+                        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6 pb-6 border-b border-slate-900">
+                            <div className="text-center md:text-left">
+                                <h1 className="text-lg md:text-xl font-bold tracking-tighter text-white uppercase leading-none">Lemes & Associados</h1>
+                                <p className="text-[6px] md:text-[7px] uppercase tracking-[0.3em] font-black mt-1">OAB/SP 255.888 • Elite Jurídica SP</p>
+                            </div>
+                            <div className="flex gap-6 text-[8px] md:text-[9px] font-black uppercase tracking-widest">
+                                <span className="text-slate-800">São Paulo - SP</span>
+                            </div>
+                        </div>
+                        <div className="max-w-7xl mx-auto mt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-[7px] font-black uppercase tracking-[0.4em] text-slate-800">
+                            <p>© 2026 Lemes & Associados Sociedade de Advogados.</p>
+                            <span className="flex items-center gap-2">
+                                <Icon name="cpu" size={10} className="text-indigo-900"/>
+                                AI Powered Platform
+                            </span>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
